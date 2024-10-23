@@ -4,14 +4,24 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 
 
+def passcard_visits(visits):
+    this_passcard_visits = []
+    for content in visits:
+        visit_data = {
+            'entered_at': content.entered_at,
+            'duration': content.time_format(),
+            'is_strange': content.is_strange(),
+        }
+        this_passcard_visits.append(visit_data)
+    return this_passcard_visits
+
+
 def passcard_info_view(request, passcode):
 
     passcard = Passcard.objects.all()[0]
-
-    visits_list = Visit.objects.filter(passcard=get_object_or_404(
-        Passcard.objects.all(), passcode=passcode))
-
-    this_passcard_visits = Visit.is_long(visits_list)
+    passcard_instance = get_object_or_404(Passcard, passcode=passcode)
+    filtered_visits = Visit.objects.filter(passcard=passcard_instance)
+    this_passcard_visits = passcard_visits(filtered_visits)
 
     context = {
         'passcard': passcard,

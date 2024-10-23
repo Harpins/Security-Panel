@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils import timezone
 import project.settings as settings
-import datetime
 
 
 class Passcard(models.Model):
@@ -22,50 +21,27 @@ class Visit(models.Model):
     entered_at = models.DateTimeField()
     leaved_at = models.DateTimeField(null=True)
 
-    def get_duration(content):
+    def get_duration(self):
         timezone.activate(settings.TIME_ZONE)
         local_time = timezone.localtime()
-        enter_time = content.entered_at
-        leave_time = content.leaved_at
+        enter_time = self.entered_at
+        leave_time = self.leaved_at
         if leave_time == None:
             return local_time - enter_time
         else:
             return leave_time - enter_time
 
-    def time_format(content):
-        time = Visit.get_duration(content).total_seconds()
-        days = int(time // 86400)
-        hours = int(time % 86400 // 3600)
-        mins = int(time % 86400 % 3600 // 60)
+    def time_format(self, sec_in_day=86400, sec_in_hr=3600, sec_in_min=60):
+        time = self.get_duration().total_seconds()
+        days = int(time // sec_in_day)
+        hours = int(time % sec_in_day // sec_in_hr)
+        mins = int(time % sec_in_day % sec_in_hr // sec_in_min)
         return f'{days} дн, {hours} ч, {mins} мин'
 
-    def lib_maker(visit):
-        visits_list = []
-        for content in visit:
-            temp_lib = {'who_entered': None, 'entered_at': None,
-                        'duration': None}
-            temp_lib['who_entered'] = content.passcard
-            temp_lib['entered_at'] = content.entered_at
-            temp_lib['duration'] = Visit.time_format(content)
-            temp_lib['is_strange'] = Visit.is_strange(content)
-            visits_list.append(temp_lib)
-        return visits_list
-
-    def is_strange(content, time_limit_min=30):
-        time_in_sec = Visit.get_duration(content).total_seconds()
-        time_in_min = int(time_in_sec % 86400 % 3600 // 60)
+    def is_strange(self, time_limit_min=30, sec_in_min=60):
+        time_in_sec = self.get_duration().total_seconds()
+        time_in_min = int(time_in_sec // sec_in_min)
         return time_in_min >= time_limit_min
-
-    def is_long(visit):
-        visits_list = []
-        for content in visit:
-            temp_lib = {'entered_at': None, 'duration': None,
-                        'is_strange': None}
-            temp_lib['entered_at'] = content.entered_at
-            temp_lib['duration'] = Visit.time_format(content)
-            temp_lib['is_strange'] = Visit.is_strange(content)
-            visits_list.append(temp_lib)
-        return visits_list
 
     def __str__(self):
         return '{user} entered at {entered} {leaved}'.format(
