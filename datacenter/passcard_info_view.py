@@ -9,7 +9,7 @@ def passcard_visits(visits):
     for content in visits:
         visit_data = {
             'entered_at': content.entered_at,
-            'duration': content.time_format(),
+            'duration': content.set_time_format(),
             'is_strange': content.is_strange(),
         }
         this_passcard_visits.append(visit_data)
@@ -18,13 +18,12 @@ def passcard_visits(visits):
 
 def passcard_info_view(request, passcode):
 
-    passcard = Passcard.objects.all()[0]
     passcard_instance = get_object_or_404(Passcard, passcode=passcode)
-    filtered_visits = Visit.objects.filter(passcard=passcard_instance)
-    this_passcard_visits = passcard_visits(filtered_visits)
+    serialized_visits = Visit.objects.filter(passcard=passcard_instance)
+    this_passcard_visits = passcard_visits(serialized_visits)
 
     context = {
-        'passcard': passcard,
+        'passcard': passcard_instance,
         'this_passcard_visits': this_passcard_visits
     }
     return render(request, 'passcard_info.html', context)

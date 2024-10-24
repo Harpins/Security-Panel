@@ -2,14 +2,14 @@ from datacenter.models import Visit
 from django.shortcuts import render
 
 
-def still_visiting(visits):
+def is_still_visiting(visits):
     visitors = []
-    for content in visits:
+    for visit in visits:
         visit_data = {
-            'who_entered': content.passcard,
-            'entered_at': content.entered_at,
-            'duration': content.time_format(),
-            'is_strange': content.is_strange(),
+            'who_entered': visit.passcard,
+            'entered_at': visit.entered_at,
+            'duration': visit.set_time_format(),
+            'is_strange': visit.is_strange(),
         }
         visitors.append(visit_data)
     return visitors
@@ -19,7 +19,7 @@ def storage_information_view(request):
 
     non_closed_visits = Visit.objects.filter(leaved_at=None)
 
-    remaining_visitors = still_visiting(non_closed_visits)
+    remaining_visitors = is_still_visiting(non_closed_visits)
 
     context = {
         'non_closed_visits': remaining_visitors,

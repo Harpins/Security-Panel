@@ -26,12 +26,11 @@ class Visit(models.Model):
         local_time = timezone.localtime()
         enter_time = self.entered_at
         leave_time = self.leaved_at
-        if leave_time == None:
+        if not leave_time:
             return local_time - enter_time
-        else:
-            return leave_time - enter_time
+        return leave_time - enter_time
 
-    def time_format(self, sec_in_day=86400, sec_in_hr=3600, sec_in_min=60):
+    def set_time_format(self, sec_in_day=86400, sec_in_hr=3600, sec_in_min=60):
         time = self.get_duration().total_seconds()
         days = int(time // sec_in_day)
         hours = int(time % sec_in_day // sec_in_hr)
