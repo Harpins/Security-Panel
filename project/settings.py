@@ -7,24 +7,24 @@ env.read_env('project/login_data.env')
 
 DATABASES = {
     'default': {
-        'ENGINE': env.str('ENGINE'), 
-        'HOST': env.str('HOST'), 
-        'PORT': env.str('PORT'), 
-        'NAME': env.str('NAME'), 
-        'USER': env.str('USER'), 
-        'PASSWORD': env.str('PASSWORD')
+        'ENGINE': env.str('DB_ENGINE'), 
+        'HOST': env.str('DB_HOST'), 
+        'PORT': env.str('DB_PORT'), 
+        'NAME': env.str('DB_NAME'), 
+        'USER': env.str('DB_USER'), 
+        'PASSWORD': env.str('DB_PASSWORD')
     }
 }
 
 INSTALLED_APPS = ['datacenter']
 
-SECRET_KEY = env.str('SECRET_KEY')
+SECRET_KEY = env.str('DB_SECRET_KEY')
 
-DEBUG = env.bool('DEBUG')
+DEBUG = env.bool('DB_DEBUG')
 
 ROOT_URLCONF = 'project.urls'
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', subcast=str)
+ALLOWED_HOSTS = env.list('DB_ALLOWED_HOSTS', subcast=str)
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
